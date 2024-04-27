@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template untuk membuat instance EC2 dengan tipe instance yang dinamis
+
+Parameters:
+  InstanceType:
+    Description: Tipe instance EC2 untuk diluncurkan
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+    ConstraintDescription: harus merupakan tipe instance EC2 yang valid.
+  AmiId:
+    Description: ID AMI untuk instance EC2
+    Type: AWS::EC2::Image::Id
+    Default: ami-015f72d56355ebc27
+    ConstraintDescription: harus merupakan ID AMI yang valid.
+
+Resources:
+  MyEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId # Contoh ID AMI, harus diganti dengan yang valid
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Mengaktifkan akses SSH melalui port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  InstanceId:
+    Description: ID Instance dari instance EC2
+    Value: !Ref MyEC2Instance
+
+  PublicIP:
+    Description: Alamat IP publik dari instance EC2
+    Value: !GetAtt MyEC2Instance.PublicIp
+
+
